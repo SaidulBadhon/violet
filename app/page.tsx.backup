@@ -5,7 +5,7 @@ import { AvatarVideo } from '../components/Avatar/AvatarVideo'
 import { TextChat } from '../components/UI/TextChat'
 import { useHeyGen } from '../hooks/useHeyGen'
 import { useLiveKit } from '../hooks/useLiveKit'
-import { useOpenAI } from '../hooks/useOpenAI'
+import { useCopilot } from '../hooks/useCopilot'
 import { ConversationMessage, AIMode } from '../types'
 
 export default function AvatarPage() {
@@ -17,7 +17,7 @@ export default function AvatarPage() {
   // Custom hooks
   const { streamData, connectionStatus, createHeyGenStream, sendTextToAvatar, setConnectionStatus } = useHeyGen()
   const { videoRef, isConnected, connectToLiveKit, disconnect } = useLiveKit(streamData, setConnectionStatus)
-  const { generateOpenAIResponse } = useOpenAI()
+  const { generateCopilotResponse } = useCopilot()
 
   // Message handling
   const handleUserMessage = useCallback(async (userMessage: string) => {
@@ -32,9 +32,9 @@ export default function AvatarPage() {
         // Use HeyGen's built-in AI with 'talk' task type
         await sendTextToAvatar(userMessage, 'talk')
       } else {
-        // Use OpenAI and then make avatar repeat the response
-        setConnectionStatus('🤖 Consulting OpenAI...')
-        const aiResponse = await generateOpenAIResponse(userMessage)
+        // Use Copilot and then make avatar repeat the response
+        setConnectionStatus('🤖 Consulting CoinAdvisor AI...')
+        const aiResponse = await generateCopilotResponse(userMessage, { searchEnabled: true })
         
         // Add AI response to conversation
         setConversation(prev => [...prev, { role: 'avatar', message: aiResponse }])
@@ -49,7 +49,7 @@ export default function AvatarPage() {
     } finally {
       setIsAvatarSpeaking(false)
     }
-  }, [sendTextToAvatar, aiMode, generateOpenAIResponse, setConnectionStatus])
+  }, [sendTextToAvatar, aiMode, generateCopilotResponse, setConnectionStatus])
 
   return (
     <div>
